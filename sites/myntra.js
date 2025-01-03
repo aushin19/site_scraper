@@ -1,9 +1,12 @@
+process.env.PUPPETEER_CACHE_DIR = '/tmp/puppeteer_cache';
+
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 
 async function myntraData(url) {
     try {
         const browser = await puppeteer.launch({
+            executablePath: '/usr/bin/google-chrome',
             headless: true,
             args: [
                 '--no-sandbox',

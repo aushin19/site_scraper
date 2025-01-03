@@ -3,10 +3,10 @@
     "cheerio": "^1.0.0",
     "express": "^4.21.2",
     "nodemon": "^3.1.9",
-    "puppeteer": "^23.11.1"
+    "puppeteer": "^20.0.0"
   },
   "scripts": {
-    "postinstall": "npx puppeteer install",
+    "postinstall": "npx puppeteer install",  // This will install Chrome
     "start": "node server.js"
   }
 }
