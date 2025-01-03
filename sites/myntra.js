@@ -1,10 +1,9 @@
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 
 async function myntraData(url) {
     try {
         const browser = await puppeteer.launch({
-            executablePath: '/usr/bin/google-chrome',
             headless: true,
             args: [
                 '--no-sandbox',
@@ -26,11 +25,15 @@ async function myntraData(url) {
         const prod_name = $('h1.pdp-name').text().trim();
         const prod_affiliateURL = '';
         const prod_URL = url;
-        const prod_currentPrice = $('span.pdp-price').text().trim().replace("MRP", "").replace(" ", "");
-        const prod_currencySymbol = prod_currentPrice.trim().charAt(0);
-        const prod_maxPrice = $('span.pdp-mrp > s:first-child').text().trim();
-        const prod_rating = $('div.index-overallRating > div:first-child').text().trim();
-        const prod_reviews = $('div.index-ratingsCount').text().trim();
+        let prod_currentPrice = $('span.pdp-price').text().trim().replace("MRP", "").replace(" ", "");
+        prod_currentPrice = convertPrice(Number(prod_currentPrice.replace(prod_currentPrice.charAt(0), "")));
+        const prod_currencySymbol = $('span.pdp-price').text().trim().replace("MRP", "").replace(" ", "").charAt(0);
+        let prod_maxPrice = $('span.pdp-mrp > s:first-child').text().trim();
+        prod_maxPrice = convertPrice(Number(prod_maxPrice.replace(prod_maxPrice.charAt(0), "")))
+        let prod_rating = $('div.index-overallRating > div:first-child').text().trim();
+        prod_rating = prod_rating.length === 0 ? "null" : prod_rating;
+        let prod_reviews = $('div.index-ratingsCount').text().trim();
+        prod_reviews = prod_reviews.length === 0 ? "null" : prod_reviews;
 
         const prod_image_style = $('div.image-grid-image').attr('style');
         let prod_image = '';
@@ -55,11 +58,17 @@ async function myntraData(url) {
             prod_reviews,
         };
 
+        console.log(productData);
         return productData;
     } catch (error) {
         console.error('Error:', error);
         throw new Error('Failed to scrape the data');
     }
+}
+
+function convertPrice(number) {
+    const formattedNumber = number.toLocaleString('en-US');
+    return formattedNumber
 }
 
 module.exports = myntraData;

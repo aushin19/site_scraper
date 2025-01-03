@@ -1,10 +1,9 @@
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 
 async function ajioData(url) {
     try {
         const browser = await puppeteer.launch({
-            executablePath: '/usr/bin/google-chrome',
             headless: true,
             args: [
                 '--no-sandbox',
@@ -26,17 +25,21 @@ async function ajioData(url) {
         const prod_name = $('h1.prod-name').text().trim();
         const prod_affiliateURL = '';
         const prod_URL = url;
-        const prod_currentPrice = $('div.prod-sp').text().trim();
+        let prod_currentPrice = $('div.prod-sp').text().trim();
+        prod_currentPrice = prod_currentPrice.replace(prod_currentPrice.charAt(0), "");
         const prod_currencySymbol = $('div.prod-sp').text().trim().charAt(0);
-        const prod_maxPrice = $('span.prod-cp').text().trim();
-        const prod_rating = $('span._3c5q0').text().trim();
-        const prod_reviews = $('span._38RNg').text().trim();
+        let prod_maxPrice = $('span.prod-cp').text().trim();
+        prod_maxPrice = prod_maxPrice.replace(prod_maxPrice.charAt(0), "")
+        let prod_rating = $('span._3c5q0').text().trim();
+        prod_rating = prod_rating.length === 0 ? "null" : prod_rating;
+        let prod_reviews = $('span._38RNg').text().trim();
+        prod_reviews = prod_reviews.length === 0 ? "null" : prod_reviews;
 
         const prod_image = $('img.rilrtl-lazy-img.img-alignment.zoom-cursor.rilrtl-lazy-img-loaded').attr('src');
 
         await browser.close();
 
-        return {
+        const productData = {
             website_name,
             prod_name,
             prod_image,
@@ -48,6 +51,9 @@ async function ajioData(url) {
             prod_rating,
             prod_reviews,
         };
+
+        console.log(productData);
+        return productData;
     } catch (error) {
         console.error('Scraping error:', error);
         throw new Error('Failed to scrape the data');
