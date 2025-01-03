@@ -54,7 +54,6 @@ async function myntraData(url) {
             prod_reviews,
         };
 
-        // Add this return statement
         return productData;
     } catch (error) {
         console.error('Error:', error);

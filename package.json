@@ -6,6 +6,7 @@
     "puppeteer": "^23.11.1"
   },
   "scripts": {
-    "start": "node app.js"
+    "postinstall": "npx puppeteer install",
+    "start": "node server.js"
   }
 }
