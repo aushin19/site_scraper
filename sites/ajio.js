@@ -1,6 +1,4 @@
-process.env.PUPPETEER_CACHE_DIR = '/tmp/puppeteer_cache';
-
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const cheerio = require('cheerio');
 
 async function ajioData(url) {
