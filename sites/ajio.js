@@ -4,8 +4,10 @@ const cheerio = require('cheerio');
 async function ajioData(url) {
     try {
         const browser = await puppeteer.launch({
-            headless: true,
-            channel: 'chrome',
+            executablePath: await chromium.executablePath,
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            headless: chromium.headless,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
