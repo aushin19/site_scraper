@@ -6,7 +6,6 @@ const scrapeFlipkart = require('../sites/flipkart');
 const app = express();
 const port = 3000;
 
-// Route to scrape Ajio
 app.get('/scrape/ajio', async (req, res) => {
     const url = req.query.url;
     if (!url) {
