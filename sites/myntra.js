@@ -5,15 +5,15 @@ async function myntraData(url) {
     try {
         const browser = await puppeteer.launch({
             executablePath: await chromium.executablePath,
-            headless: true,
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-http2',
-                '--disable-gpu',
-            ],
+            headless: chromium.headless,
+            // args: [
+            //     '--no-sandbox',
+            //     '--disable-setuid-sandbox',
+            //     '--disable-http2',
+            //     '--disable-gpu',
+            // ],
         });
         const page = await browser.newPage();
 
