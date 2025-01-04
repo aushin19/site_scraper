@@ -5,11 +5,10 @@ const chromium = require('chrome-aws-lambda');
 async function myntraData(url) {
     try {
         const browser = await puppeteer.launch({
-            executablePath: await chromium.executablePath,
-            args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            headless: chromium.headless,
-            ignoreHTTPSErrors: true
+            // executablePath: await chromium.executablePath,
+            // args: chromium.args,
+            // defaultViewport: chromium.defaultViewport,
+            // headless: chromium.headless
         });
         const page = await browser.newPage();
 

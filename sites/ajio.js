@@ -8,14 +8,7 @@ async function ajioData(url) {
             executablePath: await chromium.executablePath,
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
-            headless: chromium.headless,
-            ignoreHTTPSErrors: true,
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-http2',
-                '--disable-gpu',
-            ],
+            headless: chromium.headless
         });
         const page = await browser.newPage();
 
