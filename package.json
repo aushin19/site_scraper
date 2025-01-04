@@ -11,8 +11,7 @@
     "puppeteer-core": "^10.1.0"
   },
   "scripts": {
-    "build": "apt-get install -y libnss3",
-    "postinstall": "npx puppeteer install",
+    "postinstall": "npm puppeteer install apt-get update && apt-get install -y libnss3",
     "start": "node api/index.js"
   }
 }
