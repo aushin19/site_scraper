@@ -1,18 +1,15 @@
 const axios = require('axios');
 const puppeteer = require('puppeteer-core');
+const chromium = require('chrome-aws-lambda');
 
 async function flipkartData(url) {
     try {
         // Launch the browser in headless mode
         const browser = await puppeteer.launch({
-            headless: true,
-            channel: 'chrome',
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-http2',
-                '--disable-gpu',
-            ],
+            args: chromium.args,
+            executablePath: await chromium.executablePath,
+            headless: chromium.headless,
+            channel: 'chrome'
         });
 
         // Open a new page
