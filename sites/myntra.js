@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer-core');
 const cheerio = require('cheerio');
+const chromium = require('chrome-aws-lambda');
 
 async function myntraData(url) {
     try {
@@ -7,7 +8,8 @@ async function myntraData(url) {
             executablePath: await chromium.executablePath,
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
-            headless: chromium.headless
+            headless: chromium.headless,
+            ignoreHTTPSErrors: true
         });
         const page = await browser.newPage();
 

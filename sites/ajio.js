@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer-core');
 const cheerio = require('cheerio');
+const chromium = require('chrome-aws-lambda');
 
 async function ajioData(url) {
     try {
@@ -8,6 +9,7 @@ async function ajioData(url) {
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
             headless: chromium.headless,
+            ignoreHTTPSErrors: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
