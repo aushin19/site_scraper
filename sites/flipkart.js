@@ -5,9 +5,8 @@ const { URL } = require('url');
 async function flipkartData(shortURL) {
     try {
         const originalURL = await expandShortURL(shortURL);
-        //console.log(originalURL)
         const parsedUrl = new URL(originalURL);
-        const pathname = parsedUrl.pathname;
+        const pathname = parsedUrl.pathname + parsedUrl.search;
 
         const data = JSON.stringify({
             pageUri: pathname
@@ -45,18 +44,17 @@ async function flipkartData(shortURL) {
             website_name: 'Flipkart',
             prod_name: content.titles?.title || 'N/A',
             prod_image: transformImageUrl(content.imageUrl),
-            prod_affiliateURL: '', // Add affiliate logic if needed
+            prod_affiliateURL: '',
             prod_URL: shortURL,
             prod_currencySymbol: '₹',
             prod_currentPrice: convertPrice(content.pricing?.finalPrice?.value || 0),
-            prod_maxPrice: convertPrice(content.pricing?.finalPrice?.value || 0),
-            prod_rating: content.rating?.average || 'N/A',
-            prod_reviews: content.rating?.reviewCount || 0
+            prod_maxPrice: convertPrice(content.pricing?.mrp || 0),
+            prod_rating: content.fdpEventTracking.commonContext.pr?.rating || 'N/A',
+            prod_reviews: content.fdpEventTracking.commonContext.pr?.reviewsCount || 0
         };
 
         return productData;
     } catch (error) {
-        //console.error('Error:', error.message);
         throw new Error('Failed to fetch Flipkart data');
     }
 }
@@ -78,9 +76,9 @@ function transformImageUrl(imageUrl) {
 async function expandShortURL(shortURL) {
     try {
         const response = await axios.get(shortURL, {
-            maxRedirects: 10, // Increase the limit
+            maxRedirects: 10,
             validateStatus: function (status) {
-                return status >= 200 && status < 400; // Allow redirects
+                return status >= 200 && status < 400;
             },
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36', // Mimic a browser
@@ -89,23 +87,18 @@ async function expandShortURL(shortURL) {
             },
         });
 
-        // Extract the final URL
         const originalUrl = response.request.res.responseUrl;
         return originalUrl;
     } catch (error) {
         console.error('Error extracting original URL:');
 
-        // Log the full error object for debugging
         if (error.response) {
-            // The server responded with a status code outside the 2xx range
             console.error('Response data:', error.response.data);
             console.error('Response status:', error.response.status);
             console.error('Response headers:', error.response.headers);
         } else if (error.request) {
-            // The request was made but no response was received
             console.error('No response received:', error.request);
         } else {
-            // Something else went wrong
             console.error('Error:', error.message);
         }
 
