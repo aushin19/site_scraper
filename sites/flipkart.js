@@ -1,37 +1,19 @@
 const axios = require('axios');
-const puppeteer = require('puppeteer-core');
-const chromium = require('chrome-aws-lambda');
+const https = require('https');
+const { URL } = require('url');
 
-async function flipkartData(url) {
+async function flipkartData(shortURL) {
     try {
-        // Launch the browser in headless mode
-        const browser = await puppeteer.launch({
-            args: chromium.args,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless,
-            channel: 'chrome'
-        });
-
-        // Open a new page
-        const page = await browser.newPage();
-
-        // Navigate to a website
-        const urlToVisit = url;
-        await page.goto(urlToVisit);
-
-        // Extract the current URL
-        const currentURL = await page.url();
-
-        // Close the browser
-        await browser.close();
-
-        const parsedUrl = new URL(currentURL);
+        const originalURL = await expandShortURL(shortURL);
+        //console.log(originalURL)
+        const parsedUrl = new URL(originalURL);
         const pathname = parsedUrl.pathname;
-        let data = JSON.stringify({
-            "pageUri": pathname
+
+        const data = JSON.stringify({
+            pageUri: pathname
         });
 
-        let config = {
+        const config = {
             method: 'post',
             maxBodyLength: Infinity,
             url: 'https://2.rome.api.flipkart.com/api/4/page/fetch',
@@ -53,48 +35,82 @@ async function flipkartData(url) {
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"Windows"',
             },
-            data: data
+            data
         };
 
         const response = await axios.request(config);
-
-        const content = response.data;
-
-        const website_name = 'Flipkart';
-        const prod_name = content.RESPONSE.pageData.pageContext.titles.title;
-        let prod_image = content.RESPONSE.pageData.pageContext.imageUrl + "";
-        prod_image = prod_image.replace("%7B@", "").replace("%7D", "").replace("{@quality}", "70&crop=false").replace("{@width}", "1024").replace("{@height}", "1024")
-        const prod_affiliateURL = '';
-        const prod_URL = url;
-        const prod_currencySymbol = "₹";
-        const prod_currentPrice = convertPrice(Number(content.RESPONSE.pageData.pageContext.pricing.finalPrice.value));
-        const prod_maxPrice = convertPrice(Number(content.RESPONSE.pageData.pageContext.pricing.finalPrice.value));
-        const prod_rating = content.RESPONSE.pageData.pageContext.rating.average;
-        const prod_reviews = content.RESPONSE.pageData.pageContext.rating.reviewCount;
+        const content = response.data.RESPONSE.pageData.pageContext;
 
         const productData = {
-            website_name,
-            prod_name,
-            prod_image,
-            prod_affiliateURL,
-            prod_URL,
-            prod_currencySymbol,
-            prod_currentPrice,
-            prod_maxPrice,
-            prod_rating,
-            prod_reviews
+            website_name: 'Flipkart',
+            prod_name: content.titles?.title || 'N/A',
+            prod_image: transformImageUrl(content.imageUrl),
+            prod_affiliateURL: '', // Add affiliate logic if needed
+            prod_URL: shortURL,
+            prod_currencySymbol: '₹',
+            prod_currentPrice: convertPrice(content.pricing?.finalPrice?.value || 0),
+            prod_maxPrice: convertPrice(content.pricing?.finalPrice?.value || 0),
+            prod_rating: content.rating?.average || 'N/A',
+            prod_reviews: content.rating?.reviewCount || 0
         };
 
         return productData;
     } catch (error) {
-        console.error('Scraping error:', error);
-        throw new Error('Failed to scrape the data');
+        //console.error('Error:', error.message);
+        throw new Error('Failed to fetch Flipkart data');
     }
 }
 
 function convertPrice(number) {
-    const formattedNumber = number.toLocaleString('en-US');
-    return formattedNumber
+    return number ? number.toLocaleString('en-US') : '0';
+}
+
+function transformImageUrl(imageUrl) {
+    if (!imageUrl) return 'N/A';
+    return imageUrl
+        .replace('%7B@', '')
+        .replace('%7D', '')
+        .replace('{@quality}', '70&crop=false')
+        .replace('{@width}', '1024')
+        .replace('{@height}', '1024');
+}
+
+async function expandShortURL(shortURL) {
+    try {
+        const response = await axios.get(shortURL, {
+            maxRedirects: 10, // Increase the limit
+            validateStatus: function (status) {
+                return status >= 200 && status < 400; // Allow redirects
+            },
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36', // Mimic a browser
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+            },
+        });
+
+        // Extract the final URL
+        const originalUrl = response.request.res.responseUrl;
+        return originalUrl;
+    } catch (error) {
+        console.error('Error extracting original URL:');
+
+        // Log the full error object for debugging
+        if (error.response) {
+            // The server responded with a status code outside the 2xx range
+            console.error('Response data:', error.response.data);
+            console.error('Response status:', error.response.status);
+            console.error('Response headers:', error.response.headers);
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.error('No response received:', error.request);
+        } else {
+            // Something else went wrong
+            console.error('Error:', error.message);
+        }
+
+        return null;
+    }
 }
 
 module.exports = flipkartData;
