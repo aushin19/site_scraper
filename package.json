@@ -11,7 +11,7 @@
     "puppeteer-core": "^10.1.0"
   },
   "scripts": {
-    "postinstall": "npm puppeteer install apt-get update && apt-get install -y libnss3",
+    "postinstall": "npm install puppeteer-core chrome-aws-lambda",
     "start": "node api/index.js"
   }
 }
