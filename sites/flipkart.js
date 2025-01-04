@@ -1,8 +1,25 @@
 const axios = require('axios');
+const puppeteer = require('puppeteer');
 
 async function flipkartData(url) {
     try {
-        const parsedUrl = new URL(url);
+        // Launch the browser in headless mode
+        const browser = await puppeteer.launch({ headless: true });
+
+        // Open a new page
+        const page = await browser.newPage();
+
+        // Navigate to a website
+        const urlToVisit = url;
+        await page.goto(urlToVisit);
+
+        // Extract the current URL
+        const currentURL = await page.url();
+
+        // Close the browser
+        await browser.close();
+
+        const parsedUrl = new URL(currentURL);
         const pathname = parsedUrl.pathname;
         let data = JSON.stringify({
             "pageUri": pathname
