@@ -5,6 +5,7 @@ async function ajioData(url) {
     try {
         const browser = await puppeteer.launch({
             headless: true,
+            channel: 'chrome',
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
