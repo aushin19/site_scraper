@@ -38,6 +38,11 @@ async function flipkartData(shortURL) {
         };
 
         const response = await axios.request(config);
+
+        if (response.status < 200 || response.status >= 300) {
+            throw new Error(response.status);
+        }
+
         const content = response.data.RESPONSE.pageData.pageContext;
 
         const productData = {
@@ -47,15 +52,17 @@ async function flipkartData(shortURL) {
             prod_affiliateURL: '',
             prod_URL: shortURL,
             prod_currencySymbol: '₹',
-            prod_currentPrice: convertPrice(content.pricing?.finalPrice?.value || 0),
-            prod_maxPrice: convertPrice(content.pricing?.mrp || 0),
+            prod_currentPriceText: convertPrice(content.pricing?.finalPrice?.value || 0),
+            prod_currentPrice: content.pricing?.finalPrice?.value || 0,
+            prod_maxPriceText: convertPrice(content.pricing?.mrp || 0),
+            prod_maxPrice: content.pricing?.mrp || 0,
             prod_rating: content.fdpEventTracking.commonContext.pr?.rating || 'N/A',
             prod_reviews: content.fdpEventTracking.commonContext.pr?.reviewsCount || 0
         };
 
         return productData;
     } catch (error) {
-        throw new Error('Failed to fetch Flipkart data');
+        throw new Error(500);
     }
 }
 
