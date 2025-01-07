@@ -40,9 +40,9 @@ async function ajioData(url) {
         const prod_maxPrice = convertToNumber(prod_maxPriceText);
 
         let prod_rating = $('span._3c5q0').text().trim();
-        prod_rating = prod_rating.length === 0 ? "null" : prod_rating;
+        prod_rating = Number(prod_rating.length === 0 ? 0 : prod_rating);
         let prod_reviews = $('span._38RNg').text().trim();
-        prod_reviews = prod_reviews.length === 0 ? "null" : prod_reviews;
+        prod_reviews = prod_reviews.length === 0 ? "" : prod_reviews;
 
         const prod_image = $('img.rilrtl-lazy-img.img-alignment.zoom-cursor.rilrtl-lazy-img-loaded').attr('src');
 
@@ -63,6 +63,7 @@ async function ajioData(url) {
             prod_reviews,
         };
 
+        console.log(productData);
         return productData;
     } catch (error) {
         console.error('Scraping error:', error);

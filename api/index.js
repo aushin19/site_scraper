@@ -5,7 +5,7 @@ const app = express();
 const links = new Links();
 
 app.get('/scrape', async (req, res) => {
-    const inputURL = req.query.url;
+    const inputURL = encodeURI(req.query.url);
     if (!inputURL) {
       return res.status(400).json({error: 'URL is required' });
     }

@@ -1,5 +1,4 @@
 const axios = require('axios');
-const https = require('https');
 const { URL } = require('url');
 
 async function flipkartData(shortURL) {
@@ -56,10 +55,11 @@ async function flipkartData(shortURL) {
             prod_currentPrice: content.pricing?.finalPrice?.value || 0,
             prod_maxPriceText: convertPrice(content.pricing?.mrp || 0),
             prod_maxPrice: content.pricing?.mrp || 0,
-            prod_rating: content.fdpEventTracking.commonContext.pr?.rating || 'N/A',
-            prod_reviews: content.fdpEventTracking.commonContext.pr?.reviewsCount || 0
+            prod_rating: Number(content.fdpEventTracking.commonContext.pr?.rating || 0),
+            prod_reviews: content.fdpEventTracking.commonContext.pr?.reviewsCount || ""
         };
 
+        console.log(productData);
         return productData;
     } catch (error) {
         throw new Error(500);

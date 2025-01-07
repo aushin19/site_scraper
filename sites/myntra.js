@@ -39,9 +39,9 @@ async function myntraData(url) {
         const prod_maxPrice = convertToNumber(prod_maxPriceText)
 
         let prod_rating = $('div.index-overallRating > div:first-child').text().trim();
-        prod_rating = prod_rating.length === 0 ? "null" : prod_rating;
+        prod_rating = Number(prod_rating.length === 0 ? 0 : prod_rating);
         let prod_reviews = $('div.index-ratingsCount').text().trim();
-        prod_reviews = prod_reviews.length === 0 ? "null" : prod_reviews;
+        prod_reviews = prod_reviews.length === 0 ? "" : prod_reviews;
 
         const prod_image_style = $('div.image-grid-image').attr('style');
         let prod_image = '';
@@ -68,7 +68,7 @@ async function myntraData(url) {
             prod_reviews,
         };
 
-        //console.log(productData);
+        console.log(productData);
         return productData;
     } catch (error) {
         console.error('Error:', error);
