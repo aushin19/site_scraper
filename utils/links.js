@@ -5,6 +5,9 @@ const scrapeMyntra = require('../sites/myntra');
 const scrapeFlipkart = require('../sites/flipkart');
 
 class Links {
+
+  expandedURL = ""
+
   constructor() {
     this.siteLinks = [
       { URL: "amazon.in", siteName: "amazon" },
@@ -64,6 +67,7 @@ class Links {
   
       // If there's a redirect, axios will give us the final URL in the response
       const originalUrl = response.request.res.responseUrl;
+      this.expandedURL = originalUrl
   
       console.log('Final expanded URL:', originalUrl); // Debugging
   
@@ -88,14 +92,14 @@ class Links {
   }
   
 
-  async routeToScraper(siteName, link) {
+  async routeToScraper(siteName) {
     switch (siteName) {
       case "flipkart":
-        return await scrapeFlipkart(link);
+        return await scrapeFlipkart(this.expandedURL);
       case "ajio":
-        return await scrapeAjio(link);
+        return await scrapeAjio(this.expandedURL);
       case "myntra":
-        return await scrapeMyntra(link);
+        return await scrapeMyntra(this.expandedURL);
       default:
         throw new Error("Scraper not implemented for this site");
     }

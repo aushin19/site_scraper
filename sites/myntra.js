@@ -57,7 +57,6 @@ async function myntraData(url) {
             website_name,
             prod_name,
             prod_image,
-            prod_affiliateURL,
             prod_URL,
             prod_currencySymbol,
             prod_currentPriceText,

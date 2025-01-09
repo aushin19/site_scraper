@@ -48,7 +48,6 @@ async function flipkartData(shortURL) {
             website_name: 'Flipkart',
             prod_name: content.titles?.title || 'N/A',
             prod_image: transformImageUrl(content.imageUrl),
-            prod_affiliateURL: '',
             prod_URL: shortURL,
             prod_currencySymbol: '₹',
             prod_currentPriceText: convertPrice(content.pricing?.finalPrice?.value || 0),
